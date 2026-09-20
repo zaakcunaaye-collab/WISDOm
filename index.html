@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>The Noor</title>
+  <meta name="description" content="Quraan, Adhkaar, Tasbiix iyo Ducooyin">
+  <meta name="theme-color" content="#4b0082">
+
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" href="./icons/icon-192.png">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f3fa;
+      color: #222;
+    }
+
+    header {
+      background: linear-gradient(135deg, #4b0082, #7b2cbf);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+      border-radius: 0 0 24px 24px;
+    }
+
+    header img {
+      width: 90px;
+      height: 90px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    header h1 {
+      margin: 5px 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 8px 0 0;
+      opacity: 0.9;
+    }
+
+    main {
+      max-width: 650px;
+      margin: 25px auto;
+      padding: 0 16px;
+    }
+
+    .card {
+      background: white;
+      margin-bottom: 15px;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: #4b0082;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      padding: 14px;
+      margin-top: 10px;
+      border-radius: 10px;
+      background: #4b0082;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #35105e;
+    }
+
+    #installButton {
+      display: none;
+      background: #16803c;
+    }
+
+    footer {
+      text-align: center;
+      color: #666;
+      padding: 25px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <img src="./icons/icon-192.png" alt="The Noor logo">
+    <h1>The Noor</h1>
+    <p>Quraan, Adhkaar, Tasbiix iyo Ducooyin</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Quraan</h2>
+      <p>Akhri oo dhageyso Quraanka Kariimka ah.</p>
+      <button onclick="showMessage('Qaybta Quraanka ayaa la furay')">
+        Fur Quraanka
+      </button>
+    </section>
+
+    <section class="card">
+      <h2>Adhkaar</h2>
+      <p>Adhkaarta subaxda iyo galabta.</p>
+      <button onclick="showMessage('Qaybta Adhkaarta ayaa la furay')">
+        Fur Adhkaar
+      </button>
+    </section>
+
+    <section class="card">
+      <h2>Tasbiix</h2>
+      <p>Tiri tasbiixdaada si fudud.</p>
+      <button onclick="increaseTasbih()">
+        Tasbiix: <span id="counter">0</span>
+      </button>
+    </section>
+
+    <section class="card">
+      <h2>Ducooyin</h2>
+      <p>Ducooyin muhiim ah oo maalinle ah.</p>
+      <button onclick="showMessage('Qaybta Ducooyinka ayaa la furay')">
+        Fur Ducooyin
+      </button>
+    </section>
+
+    <section class="card">
+      <button id="installButton">Ku rakib App-ka</button>
+    </section>
+  </main>
+
+  <footer>
+    © 2026 The Noor
+  </footer>
+
+  <script>
+    let count = 0;
+
+    function increaseTasbih() {
+      count++;
+      document.getElementById("counter").textContent = count;
+    }
+
+    function showMessage(message) {
+      alert(message);
+    }
+
+    let deferredPrompt;
+    const installButton = document.getElementById("installButton");
+
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      deferredPrompt = event;
+      installButton.style.display = "block";
+    });
+
+    installButton.addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+
+      deferredPrompt.prompt();
+
+      const result = await deferredPrompt.userChoice;
+      console.log("Install result:", result.outcome);
+
+      deferredPrompt = null;
+      installButton.style.display = "none";
+    });
+
+    window.addEventListener("appinstalled", () => {
+      installButton.style.display = "none";
+      console.log("App-ka waa la rakibay");
+    });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("./service-worker.js")
+          .then((registration) => {
+            console.log("Service worker waa shaqaynayaa:", registration.scope);
+          })
+          .catch((error) => {
+            console.error("Service worker error:", error);
+          });
+      });
+    }
+  </script>
+</body>
+</html>
